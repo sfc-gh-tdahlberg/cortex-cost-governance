@@ -1,0 +1,26 @@
+definition_version: 2
+entities:
+  cortex_cost_governance:
+    type: streamlit
+    identifier:
+      name: CORTEX_COST_GOVERNANCE
+      database: CORTEX_COST_GOVERNANCE
+      schema: STREAMLIT
+    query_warehouse: AGENTIC_ANALYTICS_VHOL_WH
+    runtime_name: SYSTEM$ST_CONTAINER_RUNTIME_PY3_11
+    compute_pool: SYSTEM_COMPUTE_POOL_CPU
+    external_access_integrations:
+      - PYPI_ACCESS_INTEGRATION
+    main_file: streamlit_app.py
+    artifacts:
+      - streamlit_app.py
+      - pyproject.toml
+      - src/data.py
+      - src/__init__.py
+      - app_pages/home.py
+      - app_pages/executive_overview.py
+      - app_pages/ai_functions.py
+      - app_pages/cortex_code.py
+      - app_pages/cortex_agents.py
+      - app_pages/cortex_search.py
+      - app_pages/user_spend.py

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.DS_Store
+output/
+pages/
+environment.yml
+requirements.txt
+create_pptx.py
