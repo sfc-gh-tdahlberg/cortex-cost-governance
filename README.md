@@ -36,10 +36,12 @@ Deep-dive into Cortex AI function usage (AI_COMPLETE, AI_EXTRACT, AI_EMBED, AI_S
 - Function x Model cross-tabulation with credits, tokens, and query counts
 
 ### Cortex Code
-Tracks AI_SERVICES credits attributable to Cortex Code (CLI and UI):
+Tracks Cortex Code costs across all surfaces (CLI, Snowsight, and general AI services):
 - **Note:** As of early 2026, Snowflake does not charge separately for Cortex Code. LLM invocations appear as AI_SERVICES credits.
-- Tab 1 — AI Services Credits: daily trend and totals
+- Tab 1 — AI Services Credits: daily AI_SERVICES metering trend and totals
 - Tab 2 — Cortex-Related Queries: queries from QUERY_HISTORY containing "CORTEX", broken down by user
+- Tab 3 — Cortex Code CLI Usage: per-user token credits, tokens, and request counts from the CLI surface
+- Tab 4 — Cortex Code Snowsight Usage: per-user token credits, tokens, and request counts from the Snowsight surface
 
 ### Cortex Agents
 Per-agent credit and token consumption:
@@ -75,8 +77,10 @@ All data is sourced from `SNOWFLAKE.ACCOUNT_USAGE` views:
 | `CORTEX_AGENT_USAGE_HISTORY` | Cortex Agents |
 | `CORTEX_SEARCH_DAILY_USAGE_HISTORY` | Cortex Search |
 | `CORTEX_SEARCH_SERVING_USAGE_HISTORY` | Cortex Search |
+| `CORTEX_CODE_CLI_USAGE_HISTORY` | Cortex Code |
+| `CORTEX_CODE_SNOWSIGHT_USAGE_HISTORY` | Cortex Code |
 | `QUERY_HISTORY` | Cortex Code |
-| `USERS` | User Spend Analysis |
+| `USERS` | User Spend Analysis, Cortex Code |
 
 Query results are cached for 10 minutes (`ttl=600`) to balance freshness with performance.
 
