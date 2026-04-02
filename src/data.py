@@ -101,6 +101,22 @@ def get_cortex_code_queries(days: int = 30) -> pd.DataFrame:
     """)
 
 
+def get_cortex_code_cli_usage(days: int = 90) -> pd.DataFrame:
+    return run_query(f"""
+        SELECT
+            DATE_TRUNC('day', c.USAGE_TIME) AS USAGE_DATE,
+            u.NAME AS USER_NAME,
+            SUM(c.TOKEN_CREDITS) AS TOTAL_CREDITS,
+            SUM(c.TOKENS) AS TOTAL_TOKENS,
+            COUNT(*) AS REQUEST_COUNT
+        FROM SNOWFLAKE.ACCOUNT_USAGE.CORTEX_CODE_CLI_USAGE_HISTORY c
+        JOIN SNOWFLAKE.ACCOUNT_USAGE.USERS u ON c.USER_ID = u.USER_ID
+        WHERE c.USAGE_TIME >= DATEADD('day', -{days}, CURRENT_TIMESTAMP())
+        GROUP BY 1, 2
+        ORDER BY 1 DESC, 3 DESC
+    """)
+
+
 def get_cortex_agent_usage(days: int = 90) -> pd.DataFrame:
     return run_query(f"""
         SELECT
