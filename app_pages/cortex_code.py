@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from src.data import get_cortex_code_usage, get_cortex_code_queries, get_cortex_code_cli_usage
+from src.data import get_cortex_code_usage, get_cortex_code_queries, get_cortex_code_cli_usage, get_cortex_code_snowsight_usage
 
 st.title(":material/code: Cortex Code Costs")
 
@@ -16,8 +16,9 @@ with st.spinner("Loading Cortex Code data..."):
     df_services = get_cortex_code_usage(days)
     df_queries = get_cortex_code_queries(min(days, 30))
     df_cli = get_cortex_code_cli_usage(days)
+    df_snowsight = get_cortex_code_snowsight_usage(days)
 
-tab1, tab2, tab3 = st.tabs(["AI Services Credits", "Cortex-Related Queries", "Cortex Code CLI Usage"])
+tab1, tab2, tab3, tab4 = st.tabs(["AI Services Credits", "Cortex-Related Queries", "Cortex Code CLI Usage", "Cortex Code Snowsight Usage"])
 
 with tab1:
     if df_services.empty:
@@ -84,3 +85,28 @@ with tab3:
 
         st.subheader("CLI Usage Detail")
         st.dataframe(df_cli.sort_values("USAGE_DATE", ascending=False), use_container_width=True)
+
+with tab4:
+    if df_snowsight.empty:
+        st.warning("No Cortex Code Snowsight usage data found.")
+    else:
+        df_snowsight["USAGE_DATE"] = pd.to_datetime(df_snowsight["USAGE_DATE"])
+        df_snowsight["TOTAL_CREDITS"] = pd.to_numeric(df_snowsight["TOTAL_CREDITS"], errors="coerce")
+        df_snowsight["TOTAL_TOKENS"] = pd.to_numeric(df_snowsight["TOTAL_TOKENS"], errors="coerce")
+        df_snowsight["REQUEST_COUNT"] = pd.to_numeric(df_snowsight["REQUEST_COUNT"], errors="coerce")
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Snowsight Token Credits", f"{df_snowsight['TOTAL_CREDITS'].sum():,.4f}")
+        c2.metric("Snowsight Tokens", f"{df_snowsight['TOTAL_TOKENS'].sum():,.0f}")
+        c3.metric("Snowsight Requests", f"{df_snowsight['REQUEST_COUNT'].sum():,.0f}")
+
+        st.subheader("Daily Snowsight Credit Trend")
+        daily_ss = df_snowsight.groupby("USAGE_DATE")["TOTAL_CREDITS"].sum().reset_index()
+        st.area_chart(daily_ss.set_index("USAGE_DATE"), y="TOTAL_CREDITS", use_container_width=True)
+
+        st.subheader("Snowsight Credits by User")
+        by_user_ss = df_snowsight.groupby("USER_NAME")["TOTAL_CREDITS"].sum().sort_values(ascending=False).reset_index()
+        st.bar_chart(by_user_ss.set_index("USER_NAME"), y="TOTAL_CREDITS", use_container_width=True)
+
+        st.subheader("Snowsight Usage Detail")
+        st.dataframe(df_snowsight.sort_values("USAGE_DATE", ascending=False), use_container_width=True)
